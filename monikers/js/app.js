@@ -7,6 +7,11 @@ const ROUNDS = [
   {n:2, pill:'var(--r2)', rule:'Use only one word', sub:'You can repeat it and use gestures'},
   {n:3, pill:'var(--r3)', rule:'Act it out', sub:'No words at all. Sound effects are okay'}
 ];
+// One card shown across the three rounds, used in How to play and the round intro help
+const ROUND_EX = [null,
+  {card:'Jeepney', say:'You say', clue:'"Colorful ride. You say <i>para</i> to get off."', coach:'Describe this card to your team without saying its name'},
+  {card:'Jeepney', say:'You say', clue:'"Para!"', coach:'Give your team just one word'},
+  {card:'Jeepney', say:'You act', clue:'Grab an overhead bar and bounce.', coach:'Act it out. No words, sound effects are okay'}];
 const TURN_MS = 60000, PER_PLAYER = 5, EXTRA = 10, MIN_P = 4, MAX_P = 8;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -131,7 +136,13 @@ howto: () => `
       <h2>Setup</h2>
       <p>Each team picks cards from a hand of options, about 5 for every player. All the picks get shuffled into one deck that both teams play.</p>
       <h2>The rounds</h2>
-      ${[1,2,3].map(n=>`<div class="rule-row"><span class="pill" style="background:${ROUNDS[n].pill}">R${n}</span><p><b>${ROUNDS[n].rule}.</b> ${ROUNDS[n].sub}.</p></div>`).join('')}
+      ${[1,2,3].map(n=>`<div class="round-card" style="--round-color:${ROUNDS[n].pill}">
+        <div class="rc-head"><span class="rc-num">Round ${n}</span><b>${ROUNDS[n].rule}</b><span>${ROUNDS[n].sub}</span></div>
+        <div class="rc-body">
+          ${roundExample(n)}
+          <button class="btn btn-line rc-btn" data-a="practice" data-r="${n}">${I.play} Practice round ${n}</button>
+        </div>
+      </div>`).join('')}
       <h2>A turn</h2>
       <p>One player gives clues for 60 seconds while their team guesses. Tap <b>Correct</b> or swipe right when they get it. Tap <b>Pass</b> or swipe left to send a card to the bottom of the deck. You can pass as often as you like.</p>
       <h2>Scoring</h2>
@@ -260,14 +271,14 @@ turn: () => `
   <section class="screen ${S.remaining<=10000?'is-low':''}" id="turn">
     ${bar('', {stack:[`Round ${S.round}`, `${S.deck.length} cards left`],
       right:`<button class="icon-btn" data-a="menu" aria-label="Game menu" aria-expanded="${S.menu}">${I.dots}</button>`})}
-    ${S.practice ? `<span class="practice-tag">Practice · doesn't count</span>` : ''}
+    ${S.practice ? `<span class="practice-tag">Practice · Round ${S.round} · doesn't count</span>` : ''}
     <div class="progress"><i id="bar" style="width:${S.remaining/S.turnDur*100}%"></i></div>
     <p class="timer" id="timer">${fmt(S.remaining)}</p>
     <div class="card-zone">
       <div class="pcard" id="pcard">${bigCard(CARDS[S.deck[0]])}</div>
       <div class="big-stamp" id="bigStamp" aria-live="polite"></div>
       ${S.practice && !S.coached ? `<div class="coach-tips" id="coach" aria-hidden="true">
-        <div class="coach c-top"><b>Clue-giver</b>Describe this card to your team without saying its name</div>
+        <div class="coach c-top"><b>Clue-giver · Round ${S.round}</b>${ROUND_EX[S.round].coach}</div>
         <div class="coach c-left"><b>Stuck?</b>Swipe left or tap Pass</div>
         <div class="coach c-right"><b>Got it?</b>Swipe right or tap Correct</div></div>` : ''}
       ${S.paused ? `<div class="veil"><h3>Paused</h3><p>The card is hidden until you resume.</p><button class="btn btn-red" data-a="resume">${I.play} Resume</button></div>` : ''}
@@ -421,6 +432,13 @@ function pickHelp(){ if(S.dialog!=='pick-help') return ''; const n=need(); retur
     <div class="row-btns"><button class="btn btn-red" data-a="keep">Got it</button></div>
   </div></div>`; }
 // Round intro (i): how a turn works, the same card across all three rounds, and a practice card
+// Shared example block: the card on the left, what the clue-giver says or does on the right
+function roundExample(n){ const e=ROUND_EX[n]; return `
+  <div class="rc-ex" style="--round-color:${ROUNDS[n].pill}">
+    <span class="rc-card"><small>The card</small><b>${e.card}</b></span>
+    <span class="rc-arrow" aria-hidden="true">${I.arrow}</span>
+    <span class="rc-say"><small>${e.say}</small>${e.clue}</span>
+  </div>`; }
 function turnHelp(){ if(S.dialog!=='turn-help') return ''; return `
   <div class="scrim" data-a="keep"><div class="sheet-dlg help-sheet" role="dialog" aria-modal="true" aria-labelledby="thT">
     <h3 id="thT">How a turn works</h3>
@@ -429,12 +447,8 @@ function turnHelp(){ if(S.dialog!=='turn-help') return ''; return `
       <li><span><b>You have 60 seconds.</b> Get through as many cards as you can.</span></li>
       <li><span><b>Got it? Swipe right</b> or tap Correct. <b>Stuck? Swipe left</b> or tap Pass to send it back.</span></li>
     </ol>
-    <p class="help-ex-title">Same card, three rounds. Example: Jeepney</p>
-    <div class="help-ex">
-      <span class="pill" style="background:var(--r1)">R1</span><span>"Colorful ride. You say <i>para</i> to get off."</span>
-      <span class="pill" style="background:var(--r2)">R2</span><span>"Para!"</span>
-      <span class="pill" style="background:var(--r3)">R3</span><span>Grab an overhead bar and bounce.</span>
-    </div>
+    <p class="help-ex-title">Example for round ${S.round}</p>
+    <div class="help-ex-wrap">${roundExample(S.round)}</div>
     <div class="row-btns"><button class="btn btn-line" data-a="practice">Try a practice card</button><button class="btn btn-red" data-a="keep">Got it</button></div>
   </div></div>`; }
 function dialog(){ if(S.dialog!=='leave') return ''; return `
@@ -482,9 +496,11 @@ function countdown(){
 }
 // Practice: a 20-second turn with spare cards that aren't in this game. Nothing is scored.
 const PRACTICE_MS = 20000;
-function startPractice(){
-  const spare = S.pool.length >= 3 ? S.pool : S.dealt.flat().filter(id=>!S.picks[0].includes(id)&&!S.picks[1].includes(id));
-  S.practiceSave = { deck:S.deck.slice() };
+function startPractice(round){
+  let spare = S.pool.length >= 3 ? S.pool : S.dealt.flat().filter(id=>!S.picks[0].includes(id)&&!S.picks[1].includes(id));
+  if(spare.length < 3) spare = CARDS.map(c=>c.id);          // from How to play, before any cards are dealt
+  S.practiceSave = { deck:S.deck.slice(), round:S.round, screen:S.screen };
+  if(round) S.round = round;
   S.deck = shuffle(spare).slice(0,5);
   S.practice = true; S.coached = false; S.dialog = null;
   S.turnDur = S.remaining = PRACTICE_MS; S.turnGot=[]; S.turnPassed=0; S.paused=false; S.menu=false;
@@ -492,9 +508,10 @@ function startPractice(){
 }
 function endPractice(){
   S.running=false; release(); cancelAnimationFrame(raf);
-  if(S.practiceSave) S.deck = S.practiceSave.deck;
+  const back = S.practiceSave || {screen:'intro'};
+  if(S.practiceSave){ S.deck = back.deck; S.round = back.round; }
   S.practice=false; S.practiceSave=null; S.turnGot=[]; S.turnPassed=0; S.paused=false; S.menu=false; S.dialog=null;
-  S.screen='intro'; render();
+  S.screen = back.screen==='howto' ? 'howto' : 'intro'; render();
 }
 function startTurn(){
   S.turnDur = S.remaining = S.carry || TURN_MS; S.carry = 0;
@@ -663,7 +680,7 @@ const A = {
   'set-color'(el){ S.avatars[S.editTeam].c=+el.dataset.k; },
   deal(){ if(S.first===null) return; deal(); S.screen='handoff'; },
   'turn-help'(){ S.dialog='turn-help'; },
-  practice(){ startPractice(); return false; },
+  practice(el){ startPractice(+el.dataset.r || 0); return false; },
   'end-practice'(){ endPractice(); return false; },
   'pick-help'(){ S.menu=false; S.dialog='pick-help'; },
   'show-cards'(){ S.screen='pick'; },
@@ -809,7 +826,7 @@ async function loadSheetDeck(){
 }
 
 function start(data){
-  if(data && data.S){ S = Object.assign(fresh(), data.S); if(S.screen==='turn'){ S.running=false; S.paused=true; } if(S.screen==='timesup') S.screen='summary'; if(S.screen==='countdown') S.screen='intro'; if(S.practice){ if(S.practiceSave) S.deck=S.practiceSave.deck; S.practice=false; S.practiceSave=null; S.screen='intro'; } }
+  if(data && data.S){ S = Object.assign(fresh(), data.S); if(S.screen==='turn'){ S.running=false; S.paused=true; } if(S.screen==='timesup') S.screen='summary'; if(S.screen==='countdown') S.screen='intro'; if(S.practice){ const b=S.practiceSave||{}; if(b.deck){ S.deck=b.deck; S.round=b.round; } S.practice=false; S.practiceSave=null; S.screen=b.screen==='howto'?'howto':'intro'; } }
   render();
 }
 window.claude?.hot?.snapshot?.(() => {
