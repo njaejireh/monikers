@@ -539,3 +539,23 @@ tfoot td{font-weight:900;border-bottom:0;font-size:16px}
 .help-list li::before{content:counter(h);width:26px;height:26px;border-radius:50%;background:var(--surface-sunken);color:var(--text-strong);font-weight:800;font-size:var(--fs-small);display:grid;place-items:center}
 .help-list b{color:var(--text-strong)}
 .help-list svg{width:16px;height:16px;vertical-align:-3px;color:var(--muted)}
+
+/* ---------- round intro help sheet ---------- */
+.sheet-dlg .help-ex-title{margin:0 0 8px;font-weight:800;color:var(--text-strong);font-size:var(--type-body-size)}
+.help-ex{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px 10px;margin-bottom:20px;font-size:var(--type-caption-size);color:#555}
+.help-ex .pill{font-size:10px;padding:3px 8px}
+.help-sheet .row-btns:has([data-a=practice]){flex-direction:column-reverse}
+.help-sheet .row-btns .btn{flex:none;width:100%}
+
+/* ---------- practice turn ---------- */
+.practice-tag{align-self:center;margin:-4px 0 6px;padding:4px 12px;border-radius:var(--radius-pill);background:var(--ri-ink);color:var(--text-on-color);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.coach-tips{position:absolute;inset:0;z-index:5;pointer-events:none}
+.coach{position:absolute;background:var(--ri-ink);color:var(--text-on-color);font-size:13px;line-height:1.35;padding:10px 12px;border-radius:var(--radius-lg);max-width:170px;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:coachIn .3s ease-out both}
+.coach b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--r2);margin-bottom:2px}
+.coach::after{content:"";position:absolute;width:12px;height:12px;background:var(--ri-ink);rotate:45deg}
+.c-top{left:50%;translate:-50% 0;top:46%;max-width:240px;text-align:center}
+.c-top::after{left:50%;margin-left:-6px;top:-6px}
+.c-left{left:18px;bottom:6px}.c-left::after{left:36px;bottom:-6px}
+.c-right{right:18px;bottom:6px;animation-delay:.1s}.c-right::after{right:36px;bottom:-6px}
+@keyframes coachIn{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.coach{animation:none}}

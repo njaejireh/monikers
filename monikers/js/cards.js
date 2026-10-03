@@ -1,3 +1,7 @@
+/* Google Sheet deck: paste the sheet's "Publish to web" CSV link between the quotes.
+   Columns: Name, Description, Category, Points (1-4). Leave it empty to use the cards below. */
+const SHEET_CSV_URL = '';
+
 /* Monikers card deck. Each card: [name, description, category, points 1-4]. Edit freely. */
 const CAT = {PEOPLE:'PEOPLE', PLACES:'PLACES', PINOY:'PINOY', NET:'INTERNET', THINGS:'THINGS', ETC:'ET CETERA'};
 const CARDS = [

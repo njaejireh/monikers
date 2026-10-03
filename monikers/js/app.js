@@ -154,7 +154,7 @@ players: () => { const [a,b] = teamSizes(); return `
           <div class="stepper">
             <button class="step" data-a="minus" aria-label="Fewer players" ${S.players<=MIN_P?'disabled':''}>${I.minus}</button>
             <div class="count" aria-live="polite">${S.players}</div>
-            <button class="step" data-a="plusp" aria-label="More players" ${S.players>=MAX_P?'disabled':''}>${I.plus}</button>
+            <button class="step" data-a="plusp" aria-label="More players" ${S.players>=maxPlayers()?'disabled':''}>${I.plus}</button>
           </div>
         </div>
         <p class="deck-line">${need()} cards per team · ${need()*2}-card deck</p>
@@ -225,7 +225,7 @@ pick: () => { const t=S.pickTeam, sel=S.picks[t], n=need(); return `
 
 intro: () => { const R=ROUNDS[S.round]; return `
   <section class="screen round-intro" style="--round-color:${R.pill}">
-    ${bar('', {right:`<button class="icon-btn" data-a="ask-leave" aria-label="End game">${I.exit}</button>`})}
+    ${bar('', {right:`<div class="bar-actions"><button class="icon-btn" data-a="turn-help" aria-label="How a turn works" title="How to play">${I.info}</button><button class="icon-btn" data-a="ask-leave" aria-label="End game">${I.exit}</button></div>`})}
     <div class="ri-top">
       <span class="ri-label">Round ${R.n} of 3</span>
       <div class="ri-dots" aria-hidden="true">${[1,2,3].map(k=>`<i class="${k<=R.n?'on':''}"></i>`).join('')}</div>
@@ -245,6 +245,7 @@ intro: () => { const R=ROUNDS[S.round]; return `
       <p class="ri-deck">${S.deck.length} cards in the deck</p>
     </div>
     <div class="foot"><button class="btn btn-red" data-a="go">Let's go ${I.arrow}</button></div>
+    ${turnHelp()}
     ${dialog()}
   </section>`; },
 
@@ -259,11 +260,16 @@ turn: () => `
   <section class="screen ${S.remaining<=10000?'is-low':''}" id="turn">
     ${bar('', {stack:[`Round ${S.round}`, `${S.deck.length} cards left`],
       right:`<button class="icon-btn" data-a="menu" aria-label="Game menu" aria-expanded="${S.menu}">${I.dots}</button>`})}
+    ${S.practice ? `<span class="practice-tag">Practice · doesn't count</span>` : ''}
     <div class="progress"><i id="bar" style="width:${S.remaining/S.turnDur*100}%"></i></div>
     <p class="timer" id="timer">${fmt(S.remaining)}</p>
     <div class="card-zone">
       <div class="pcard" id="pcard">${bigCard(CARDS[S.deck[0]])}</div>
       <div class="big-stamp" id="bigStamp" aria-live="polite"></div>
+      ${S.practice && !S.coached ? `<div class="coach-tips" id="coach" aria-hidden="true">
+        <div class="coach c-top"><b>Clue-giver</b>Describe this card to your team without saying its name</div>
+        <div class="coach c-left"><b>Stuck?</b>Swipe left or tap Pass</div>
+        <div class="coach c-right"><b>Got it?</b>Swipe right or tap Correct</div></div>` : ''}
       ${S.paused ? `<div class="veil"><h3>Paused</h3><p>The card is hidden until you resume.</p><button class="btn btn-red" data-a="resume">${I.play} Resume</button></div>` : ''}
     </div>
     <div class="foot">
@@ -272,7 +278,7 @@ turn: () => `
     </div>
     ${S.menu ? `<div class="menu" role="menu">
       <button role="menuitem" data-a="${S.paused?'resume':'pause'}">${S.paused?I.play:I.pause} ${S.paused?'Resume':'Pause'}</button>
-      <button role="menuitem" data-a="ask-leave">${I.exit} End game</button></div>` : ''}
+      ${S.practice ? `<button role="menuitem" data-a="end-practice">${I.exit} End practice</button>` : `<button role="menuitem" data-a="ask-leave">${I.exit} End game</button>`}</div>` : ''}
     ${dialog()}
   </section>`,
 
@@ -414,6 +420,23 @@ function pickHelp(){ if(S.dialog!=='pick-help') return ''; const n=need(); retur
     </ol>
     <div class="row-btns"><button class="btn btn-red" data-a="keep">Got it</button></div>
   </div></div>`; }
+// Round intro (i): how a turn works, the same card across all three rounds, and a practice card
+function turnHelp(){ if(S.dialog!=='turn-help') return ''; return `
+  <div class="scrim" data-a="keep"><div class="sheet-dlg help-sheet" role="dialog" aria-modal="true" aria-labelledby="thT">
+    <h3 id="thT">How a turn works</h3>
+    <ol class="help-list">
+      <li><span><b>One player gives clues</b> and the rest of their team guesses. The other team just watches.</span></li>
+      <li><span><b>You have 60 seconds.</b> Get through as many cards as you can.</span></li>
+      <li><span><b>Got it? Swipe right</b> or tap Correct. <b>Stuck? Swipe left</b> or tap Pass to send it back.</span></li>
+    </ol>
+    <p class="help-ex-title">Same card, three rounds. Example: Jeepney</p>
+    <div class="help-ex">
+      <span class="pill" style="background:var(--r1)">R1</span><span>"Colorful ride. You say <i>para</i> to get off."</span>
+      <span class="pill" style="background:var(--r2)">R2</span><span>"Para!"</span>
+      <span class="pill" style="background:var(--r3)">R3</span><span>Grab an overhead bar and bounce.</span>
+    </div>
+    <div class="row-btns"><button class="btn btn-line" data-a="practice">Try a practice card</button><button class="btn btn-red" data-a="keep">Got it</button></div>
+  </div></div>`; }
 function dialog(){ if(S.dialog!=='leave') return ''; return `
   <div class="scrim" data-a="keep"><div class="sheet-dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT">
     <h3 id="dlgT">End this game?</h3><p>Scores and card picks will be lost. You'll go back to the start screen.</p>
@@ -457,6 +480,22 @@ function countdown(){
   };
   cdT=setTimeout(tick, 800);
 }
+// Practice: a 20-second turn with spare cards that aren't in this game. Nothing is scored.
+const PRACTICE_MS = 20000;
+function startPractice(){
+  const spare = S.pool.length >= 3 ? S.pool : S.dealt.flat().filter(id=>!S.picks[0].includes(id)&&!S.picks[1].includes(id));
+  S.practiceSave = { deck:S.deck.slice() };
+  S.deck = shuffle(spare).slice(0,5);
+  S.practice = true; S.coached = false; S.dialog = null;
+  S.turnDur = S.remaining = PRACTICE_MS; S.turnGot=[]; S.turnPassed=0; S.paused=false; S.menu=false;
+  S.screen='turn'; initAudio(); render(); run(); lockScreen();
+}
+function endPractice(){
+  S.running=false; release(); cancelAnimationFrame(raf);
+  if(S.practiceSave) S.deck = S.practiceSave.deck;
+  S.practice=false; S.practiceSave=null; S.turnGot=[]; S.turnPassed=0; S.paused=false; S.menu=false; S.dialog=null;
+  S.screen='intro'; render();
+}
 function startTurn(){
   S.turnDur = S.remaining = S.carry || TURN_MS; S.carry = 0;
   S.turnGot=[]; S.turnPassed=0; S.leftover=0; S.cleared=false;
@@ -483,6 +522,7 @@ function paintTimer(){
 function pause(){ if(!S.running) return; S.remaining=Math.max(0,S.endAt-performance.now()); S.running=false; S.paused=true; S.menu=false; render(); }
 function resume(){ S.paused=false; S.menu=false; render(); run(); }
 function timesUp(){
+  if(S.practice){ tone(440,.35,.12); return endPractice(); }
   S.running=false; S.remaining=0; S.leftover=0; release();
   tone(440,.35,.12); setTimeout(()=>tone(330,.45,.12),180);
   try{ navigator.vibrate && navigator.vibrate(300); }catch(e){}
@@ -507,11 +547,13 @@ function clearStamp(){ const el=document.getElementById('bigStamp'); if(el){ el.
 function answer(ok){
   if(busy || !S.running || !S.deck.length) return;
   flashStamp(ok);
+  if(S.practice && !S.coached){ S.coached=true; document.getElementById('coach')?.remove(); }
   const card = document.getElementById('pcard');
   const apply = () => {
     const id = S.deck.shift();
     if(ok){ S.turnGot.push({id, keep:true}); tone(1046,.08,.06); }
     else { S.deck.push(id); S.turnPassed++; }
+    if(S.practice && !S.deck.length){ endPractice(); return false; }
     if(!S.deck.length){
       S.leftover = Math.max(0,S.endAt-performance.now()); S.running=false; S.cleared=true; release();
       S.screen='summary'; render(); return false;
@@ -600,10 +642,11 @@ const A = {
     if(m[S.screen]) S.screen = m[S.screen];
     else if(S.screen==='handoff'){ if(S.pickTeam===0) S.screen='first'; else { S.pickTeam=0; S.screen='pick'; } }
     else if(S.screen==='pick') S.screen='handoff';
+    else if(S.screen==='turn' && S.practice){ endPractice(); return false; }
     else if(S.screen==='intro' || S.screen==='turn') return A['ask-leave']();
   },
   minus(){ S.players=Math.max(MIN_P,S.players-1); },
-  plusp(){ S.players=Math.min(MAX_P,S.players+1); },
+  plusp(){ S.players=Math.min(maxPlayers(),S.players+1); },
   'to-first'(){ S.screen='first'; },
   first(el){ S.first=+el.dataset.t; S.popped=S.first; },
   any(){
@@ -619,6 +662,9 @@ const A = {
   'set-face'(el){ S.avatars[S.editTeam].f=+el.dataset.k; },
   'set-color'(el){ S.avatars[S.editTeam].c=+el.dataset.k; },
   deal(){ if(S.first===null) return; deal(); S.screen='handoff'; },
+  'turn-help'(){ S.dialog='turn-help'; },
+  practice(){ startPractice(); return false; },
+  'end-practice'(){ endPractice(); return false; },
   'pick-help'(){ S.menu=false; S.dialog='pick-help'; },
   'show-cards'(){ S.screen='pick'; },
   peek(el){
@@ -732,8 +778,38 @@ function fit(){
 addEventListener('resize', fit); fit();
 
 /* ============ boot with state kept across live updates ============ */
+/* ============ deck from Google Sheets (falls back to js/cards.js) ============ */
+// Each team is dealt (picks + EXTRA) cards, so the deck size limits how many can play.
+function maxPlayers(){ let p=MAX_P; while(p>MIN_P && 2*(PER_PLAYER*Math.ceil(p/2)+EXTRA) > CARDS.length) p--; return p; }
+function parseCSV(text){
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){ const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; } else cell+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===','){ row.push(cell); cell=''; }
+    else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n') i++; row.push(cell); rows.push(row); row=[]; cell=''; }
+    else cell+=ch; }
+  if(cell||row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+async function loadSheetDeck(){
+  if(typeof SHEET_CSV_URL==='undefined' || !SHEET_CSV_URL) return;
+  try{
+    const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 4000);  // never keep the cover waiting more than 4s
+    const res = await fetch(SHEET_CSV_URL, {cache:'no-store', signal:ctl.signal}); if(!res.ok) throw new Error(res.status);
+    const rows = parseCSV(await res.text()); const head = rows.shift().map(h=>h.trim().toLowerCase());
+    const col = k => head.indexOf(k);
+    const cards = rows.map(r=>({t:(r[col('name')]||'').trim(), d:(r[col('description')]||'').trim(),
+        c:(r[col('category')]||'ET CETERA').trim().toUpperCase()||'ET CETERA', p:Math.min(4,Math.max(1,parseInt(r[col('points')],10)||1))}))
+      .filter(c=>c.t);
+    if(cards.length < 2*(PER_PLAYER*2+EXTRA)){ console.warn(`Sheet has ${cards.length} cards, need at least ${2*(PER_PLAYER*2+EXTRA)}. Using the built-in deck.`); return; }
+    CARDS.length = 0; cards.forEach((c,id)=>CARDS.push({id, ...c}));
+    if(S.players>maxPlayers()) S.players=maxPlayers();
+  }catch(e){ console.warn('Could not load the Google Sheet deck, using the built-in one.', e); }
+}
+
 function start(data){
-  if(data && data.S){ S = Object.assign(fresh(), data.S); if(S.screen==='turn'){ S.running=false; S.paused=true; } if(S.screen==='timesup') S.screen='summary'; if(S.screen==='countdown') S.screen='intro'; }
+  if(data && data.S){ S = Object.assign(fresh(), data.S); if(S.screen==='turn'){ S.running=false; S.paused=true; } if(S.screen==='timesup') S.screen='summary'; if(S.screen==='countdown') S.screen='intro'; if(S.practice){ if(S.practiceSave) S.deck=S.practiceSave.deck; S.practice=false; S.practiceSave=null; S.screen='intro'; } }
   render();
 }
 window.claude?.hot?.snapshot?.(() => {
@@ -741,5 +817,6 @@ window.claude?.hot?.snapshot?.(() => {
   if(s.screen==='turn' && S.running) s.remaining = Math.max(0, S.endAt-performance.now());
   return {S:s};
 });
-window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+const boot = d => loadSheetDeck().finally(()=>start(d));
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
 })();
