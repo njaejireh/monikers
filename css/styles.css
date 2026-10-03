@@ -1,0 +1,580 @@
+/* Monikers styles. Layout: one iPhone-sized app on a grey design canvas; full-bleed on real phones.
+   Colors and type follow Jae's Figma mockups. */
+:root{
+  /* =====================================================================
+     MONIKERS DESIGN TOKENS
+     Three layers. Components only read from layers 2 and 3.
+       1. Primitives  raw values from Figma (colors, base sizes)
+       2. Semantic    what a value is for (text, surface, border, radius, space, type)
+       3. Component   one group per component (app bar, button, card, stepper...)
+     To restyle: change a token here. Don't override values inside a screen's rules.
+     ===================================================================== */
+
+  /* ---- 1. Primitives ---- */
+  --stage:#5d5d5d; --stage-text:#d6d6d6;
+  --cover:#fe4e3f; --cover-deep:#a8342a;
+  --brand:#b93a22; --brand-edge:#8e2a17;
+  --primary:#cb2601; --primary-edge:#af2000; --primary-hover:#bd2301;
+  --selected:#1abc00;
+  --secondary-edge:#e5e0e6;
+  --ink:#161616; --muted:#8b8b8b; --line:#e3e3e3; --paper:#ffffff; --wash:#f5f5f5;
+  --night:#0d0d0d; --night-2:#1f1f1f; --night-text:#cfcfcf;
+  --pass:#f09b32; --pass-edge:#cf7f1c; --ok:#55b22e; --ok-edge:#3c8e1f;
+  --p1:#56c599; --p2:#15bed6; --p3:#734683; --p4:#ef3c36;
+  --r1:#a8d1ff; --r2:#ffd46b; --r3:#f5a9c7;
+  --timer:#48b5d6; --danger:#e2493c;
+  --font:'Nunito', ui-rounded, 'Arial Rounded MT Bold', system-ui, -apple-system, sans-serif;
+  --font-alt:'Ubuntu', var(--font);
+  /* type scale */
+  --fs-display:26px; --fs-title-lg:22px; --fs-header:20px; --fs-title:18px; --fs-body:16px; --fs-small:14px;
+
+  /* ---- 2. Semantic ---- */
+  --text-strong:#000;          /* names, inputs, card text */
+  --text-default:#1d1b20;      /* titles */
+  --text-muted:#858585;        /* helper sentences */
+  --text-subtle:#979d9e;       /* counts like "2 players" */
+  --text-label:#626262;        /* uppercase labels */
+  --icon-default:#49454f;
+  --text-on-color:#fff;
+
+  --surface:var(--paper); --surface-sunken:var(--wash); --surface-hover:#faf8fa;
+  --border:var(--secondary-edge); --border-width:2px;
+
+  --radius-sm:8px; --radius-md:10px; --radius-lg:12px; --radius-xl:23px; --radius-pill:999px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px;
+  --gutter:var(--space-5);                     /* 24px side margin on every screen, per Figma */
+
+  --depth:4px;                                 /* the solid "3D" edge under buttons and steppers */
+  --shadow-card:3px 3px 1px rgba(97,97,97,.1);
+
+  /* type roles: size / line height / weight */
+  --type-display-size:var(--fs-display); --type-display-line:1.2;  --type-display-weight:800;  /* big statements: "Pass the phone to..." */
+  --type-title-size:var(--fs-title-lg);  --type-title-line:28px;   --type-title-weight:700;    /* app bar titles */
+  --type-heading-size:var(--fs-header);  --type-heading-line:1.3;  --type-heading-weight:800;  /* screen questions: "Who's playing?" */
+  --type-body-size:var(--fs-body);       --type-body-line:1.5;     --type-body-weight:400;
+  --type-caption-size:var(--fs-small);   --type-caption-line:20px; --type-caption-weight:400;
+  --type-label-size:var(--fs-small);     --type-label-weight:600;  --type-label-tracking:.1em;
+
+  /* ---- 3. Component ---- */
+  /* Top app bar (Material: center-aligned top app bar; iOS: navigation bar) */
+  --appbar-height:64px;
+  --appbar-title-size:var(--type-title-size); --appbar-title-line:var(--type-title-line);
+  --appbar-title-weight:var(--type-title-weight); --appbar-title-color:var(--text-default);
+  --appbar-sub-size:var(--type-caption-size); --appbar-sub-line:var(--type-caption-line);
+  --appbar-sub-weight:var(--type-caption-weight); --appbar-sub-color:var(--muted);
+  --appbar-icon-color:var(--icon-default); --appbar-icon-size:24px; --appbar-hit:48px;
+
+  /* Button */
+  --btn-height:55px; --btn-padding-x:var(--space-4); --btn-radius:var(--radius-md);
+  --btn-font-size:var(--fs-header); --btn-font-weight:700; --btn-icon:24px; --btn-gap:var(--space-1);
+  --btn-border:var(--border-width); --btn-depth:var(--depth);
+  --btn-primary-bg:var(--primary);   --btn-primary-edge:var(--primary-edge);   --btn-primary-text:var(--text-on-color); --btn-primary-hover:var(--primary-hover);
+  --btn-secondary-bg:var(--surface); --btn-secondary-edge:var(--border);       --btn-secondary-text:var(--text-strong); --btn-secondary-hover:var(--surface-hover); --btn-secondary-icon:var(--primary);
+  --btn-pass-bg:var(--pass);         --btn-pass-edge:var(--pass-edge);         --btn-pass-text:var(--text-on-color);
+  --btn-ok-bg:var(--ok);             --btn-ok-edge:var(--ok-edge);             --btn-ok-text:var(--text-on-color);
+  --btn-disabled-opacity:.4;
+
+  /* Stepper (player count) */
+  --step-size:44px; --step-radius:var(--radius-md); --step-icon:24px;
+  --count-width:56px; --count-radius:var(--radius-sm); --count-font-size:var(--fs-header);
+
+  /* Input */
+  --input-radius:var(--radius-sm); --input-padding:var(--space-4); --input-font-size:var(--fs-header);
+
+  /* Cards (game cards) and tiles (team choices) */
+  --card-radius:var(--radius-xl); --card-border:var(--border); --card-shadow:var(--shadow-card); --card-selected:var(--selected);
+  --card-title-size:var(--fs-header); --card-title-weight:700; --card-desc-size:var(--fs-body); --card-desc-weight:300;
+  --tile-radius:var(--radius-lg); --tile-padding:var(--space-6) var(--space-5);
+
+  /* Avatar (team icon) */
+  --avatar-sm:44px; --avatar-md:76px; --avatar-lg:104px;
+
+  /* Round intro: round color on top, white scoreboard sheet below */
+  --ri-ink:#14202e;                 /* dark navy text and button on the pastel round colors */
+  --ri-sheet-radius:28px;
+
+  /* Sheets and dialogs */
+  --sheet-radius:18px; --dialog-radius:var(--radius-xl);
+
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--stage);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--timer);outline-offset:2px}
+
+/* ---------- iPhone frame (393 x 852 pt screen, like iPhone 15/16) ---------- */
+.stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px 16px}
+.device-slot{position:relative;flex:none}
+.device{--sb:54px;--hb:34px;position:absolute;top:0;left:0;width:417px;height:876px;padding:12px;border-radius:68px;background:#1b1b1d;transform-origin:0 0;
+  box-shadow:inset 0 0 0 2px #3a3a3c, 0 0 0 1.5px #9a9aa0, 0 0 0 4px #2c2c2e, 0 40px 80px rgba(0,0,0,.45)}
+.device::before,.device::after{content:"";position:absolute;width:4px;background:#8e8e93;border-radius:2px}
+.device::before{left:-6px;top:170px;height:34px;box-shadow:0 70px 0 0 #8e8e93, 0 70px 0 0 #8e8e93, 0 140px 0 0 #8e8e93}
+.device::after{right:-6px;top:250px;height:100px}
+.glass{position:relative;width:393px;height:852px;border-radius:56px;overflow:hidden;background:var(--paper)}
+.island{position:absolute;top:11px;left:50%;translate:-50% 0;width:125px;height:37px;border-radius:20px;background:#000;z-index:40}
+.status{position:absolute;top:0;left:0;right:0;height:54px;padding:6px 30px 0 52px;display:flex;align-items:center;justify-content:space-between;z-index:39;pointer-events:none;
+  font:600 17px/1 -apple-system,"SF Pro Text",system-ui,sans-serif;color:#000;letter-spacing:-.01em}
+.status .icons{display:flex;gap:6px;align-items:center}
+.status svg{display:block;fill:currentColor}
+.homebar{position:absolute;bottom:8px;left:50%;translate:-50% 0;width:139px;height:5px;border-radius:3px;background:#000;z-index:39;pointer-events:none}
+.device[data-tone="light"] .status{color:#fff}
+.device[data-tone="light"] .homebar{background:#fff}
+#app{position:absolute;inset:0}
+.caption{color:var(--stage-text);font-size:12px;text-align:center;line-height:1.5;max-width:420px}
+.caption b{color:#fff;font-weight:800}
+.caption .keys{opacity:.75}
+
+/* on an actual phone: the app fills the screen, no drawn frame */
+@media (max-width:520px){
+  .stage{padding:0;gap:0}
+  .device-slot{width:100%!important;height:100%!important;flex:1}
+  .device{position:relative;width:100%;height:100%;padding:0;border-radius:0;box-shadow:none;transform:none!important;
+    --sb:env(safe-area-inset-top,0px);--hb:env(safe-area-inset-bottom,0px)}
+  .device::before,.device::after,.island,.status,.homebar{display:none}
+  .glass{width:100%;height:100%;border-radius:0}
+  .caption{display:none}
+}
+@media (hover:none){.caption .keys{display:none}}
+
+/* ---------- screen scaffold ---------- */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);padding-top:var(--sb);padding-bottom:var(--hb)}
+.bar{display:flex;align-items:center;gap:var(--space-1);height:var(--appbar-height);padding:var(--space-2) var(--space-1);flex:none}
+/* app bar type comes only from the --appbar-* tokens */
+.bar h1,.bar .stack b{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font);font-size:var(--appbar-title-size);line-height:var(--appbar-title-line);font-weight:var(--appbar-title-weight);color:var(--appbar-title-color)}
+.bar h1{flex:1;min-width:0;text-align:center}
+.bar .stack{flex:1;min-width:0;text-align:center}
+.bar .stack b{display:block}
+.bar .stack span{display:block;font-family:var(--font);font-size:var(--appbar-sub-size);line-height:var(--appbar-sub-line);font-weight:var(--appbar-sub-weight);color:var(--appbar-sub-color);font-variant-numeric:tabular-nums}
+.icon-btn{width:var(--appbar-hit);height:var(--appbar-hit);border:0;background:none;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--appbar-icon-color)}
+.icon-btn:hover{background:var(--surface-sunken)}
+.icon-btn svg{width:var(--appbar-icon-size);height:var(--appbar-icon-size)}
+.spacer{width:var(--appbar-hit);flex:none}
+.body{flex:1;min-height:0;overflow:auto;padding:20px var(--gutter)}
+.foot{flex:none;padding:var(--space-3) var(--gutter) 18px;display:flex;gap:10px}
+.btn{--_bg:var(--btn-secondary-bg);--_edge:var(--btn-secondary-edge);--_text:var(--btn-secondary-text);--_depth:var(--btn-depth);
+  flex:1;height:var(--btn-height);padding:0 var(--btn-padding-x);border-radius:var(--btn-radius);border:var(--btn-border) solid var(--_edge);
+  background:var(--_bg);color:var(--_text);box-shadow:0 var(--_depth) 0 var(--_edge);
+  font-weight:var(--btn-font-weight);font-size:var(--btn-font-size);display:inline-flex;align-items:center;justify-content:center;gap:var(--btn-gap);
+  overflow:hidden;white-space:nowrap;transition:transform .08s, box-shadow .08s}
+.btn:active{transform:translateY(var(--_depth));box-shadow:none}
+.btn svg{width:var(--btn-icon);height:var(--btn-icon);flex:none}
+.btn-red{--_bg:var(--btn-primary-bg);--_edge:var(--btn-primary-edge);--_text:var(--btn-primary-text)}
+.btn-line{--_bg:var(--btn-secondary-bg);--_edge:var(--btn-secondary-edge);--_text:var(--btn-secondary-text)}
+.btn-line svg{color:var(--btn-secondary-icon)}
+.btn-white{--_bg:var(--surface);--_edge:transparent;--_text:var(--text-strong);--_depth:0px;border:0}
+.btn-ghost{--_bg:transparent;--_edge:transparent;--_text:var(--text-on-color);--_depth:0px;border:0}
+.btn-pass{--_bg:var(--btn-pass-bg);--_edge:var(--btn-pass-edge);--_text:var(--btn-pass-text)}
+.btn-ok{--_bg:var(--btn-ok-bg);--_edge:var(--btn-ok-edge);--_text:var(--btn-ok-text)}
+@media (hover:hover){
+  .btn-red:hover{--_bg:var(--btn-primary-hover)}
+  .btn-line:hover{--_bg:var(--btn-secondary-hover)}
+  .btn-white:hover{--_bg:var(--surface-sunken)}
+  .btn-ghost:hover{--_bg:rgba(255,255,255,.1)}
+}
+.btn[disabled]{opacity:var(--btn-disabled-opacity);pointer-events:none}
+.btn-square{flex:none;width:var(--btn-height);padding:0}
+.q{text-align:center;margin:18px 0 4px;font-size:var(--type-heading-size);line-height:var(--type-heading-line);font-weight:var(--type-heading-weight);color:var(--text-strong);text-wrap:balance}
+.sub{text-align:center;margin:0;color:var(--text-muted);font-size:var(--type-body-size)}
+
+/* ---------- cover ---------- */
+.cover{background:var(--cover);color:#fff}
+.faces{display:grid;grid-template-columns:repeat(3,45px);justify-content:center;column-gap:clamp(2.5rem,16.3vw,4rem);row-gap:var(--cover-gap,40px)}
+.faces svg{display:block;width:45px;height:45px;overflow:visible}
+.cover-mid{--cover-gap:clamp(16px,4.7svh,40px);flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:var(--cover-gap);padding-block:18px 8px}
+.wordmark{margin:0;text-align:center;font-weight:700;font-size:clamp(32px,12.2vw,48px);line-height:normal;letter-spacing:.2em;padding-left:.2em}
+.cover .foot{flex-direction:column;align-items:stretch;gap:6px;padding-bottom:22px}
+.cover .foot .btn{flex:none}
+.cover .btn-line{color:#c73123}
+.link-btn{background:none;border:0;color:#fff;font-weight:700;font-size:14px;height:40px}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 5.5s infinite;animation-delay:var(--d,0s)}
+@keyframes blink{0%,95%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+
+/* ---------- how to play ---------- */
+.rules{display:flex;flex-direction:column;gap:14px;max-width:34em;margin-inline:auto}
+.rules h2{font-size:var(--fs-header);margin:10px 0 0;font-weight:800}
+.rules p{margin:0;font-size:var(--fs-body);line-height:1.55;color:#444}
+.rule-row{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:10px}
+.rule-row p b{color:var(--ink)}
+
+/* ---------- players ---------- */
+.stepper{display:flex;justify-content:center;align-items:center;gap:12px}
+.step{width:var(--step-size);height:var(--step-size);border-radius:var(--step-radius);border:var(--border-width) solid var(--border);background:var(--surface);color:var(--primary);box-shadow:0 var(--depth) 0 var(--border);display:grid;place-items:center}
+.step svg{width:var(--step-icon);height:var(--step-icon)}
+.step[disabled]{opacity:.35}
+.count{width:var(--count-width);padding:var(--space-4) 0;border:var(--border-width) solid var(--border);border-radius:var(--count-radius);background:var(--surface);color:var(--text-strong);text-align:center;line-height:normal;font-size:var(--count-font-size);font-weight:500;font-variant-numeric:tabular-nums}
+.teams{display:flex;flex-direction:column;gap:24px;padding:24px;border:1px solid var(--secondary-edge);border-radius:12px}
+.field{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.field label{font-size:var(--type-label-size);font-weight:var(--type-label-weight);color:var(--text-label);letter-spacing:var(--type-label-tracking);text-transform:uppercase}
+.field input{width:100%;border:var(--border-width) solid var(--border);border-radius:var(--input-radius);padding:var(--input-padding);font:inherit;line-height:normal;font-weight:500;font-size:var(--input-font-size);color:var(--text-strong);text-align:center;background:var(--surface)}
+.field-head{display:flex;align-items:baseline;justify-content:center;gap:8px}
+.field small{font-size:var(--type-caption-size);color:var(--text-subtle)}
+.note{margin:32px 0 0;padding:24px;background:var(--wash);border-radius:12px;font-size:var(--fs-body);line-height:normal;color:#000;text-align:center}
+.note b{color:#000;font-weight:600}
+/* game setup: Figma spacing, section gaps tightened so it fits an 852pt iPhone screen without scrolling */
+.setup .body{display:flex;flex-direction:column;gap:32px;padding:24px 24px 16px}
+.setup-count{display:flex;flex-direction:column;gap:16px}
+.setup-head{display:flex;flex-direction:column;gap:8px}
+.setup-head .q,.setup-head .sub{margin:0}
+.setup-head .sub{color:var(--text-muted)}
+.setup-teams{display:flex;flex-direction:column;gap:16px}
+.setup-teams .note{margin:0}
+
+/* ---------- who goes first ---------- */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.tile{border:var(--border-width) solid var(--border);border-radius:var(--tile-radius);background:var(--surface);color:var(--text-strong);box-shadow:var(--card-shadow);padding:var(--tile-padding);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-3);font-weight:700;font-size:var(--fs-header);min-width:0}
+.tile span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .blob{width:80px;height:80px;border-radius:50%;display:grid;place-items:center}
+.tile.is-on{border-color:var(--primary)}
+.tile.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.05)}}
+/* ghost button on a light page: keeps dark text instead of the ghost's white */
+.any{display:flex;margin:22px auto 0;color:var(--ink)}
+.any svg{color:var(--brand)}
+@media (hover:hover){.any:hover{background:var(--wash)}}
+
+/* ---------- night screens (handoff, round intro) ---------- */
+.night{background:var(--night);color:#fff}
+.night .icon-btn{color:#fff}
+.night .icon-btn:hover{background:var(--night-2)}
+.night-mid{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 28px;gap:0}
+.pill{display:inline-block;padding:7px 18px;border-radius:5px;color:#1c2b3c;font-weight:800;font-size:12px;letter-spacing:.14em}
+.night h2{margin:56px 0 10px;font-size:var(--type-display-size);line-height:var(--type-display-line);font-weight:var(--type-display-weight);text-wrap:balance}
+.night .rule-sub{margin:0;font-size:var(--fs-body);color:var(--night-text)}
+.turnbox{margin-top:60px;background:var(--night-2);border-radius:8px;padding:12px 26px;min-width:190px;max-width:100%}
+.turnbox small{display:block;font-size:var(--fs-small);color:var(--night-text);margin-bottom:3px}
+.turnbox b{font-size:var(--fs-title);font-weight:800;overflow-wrap:anywhere}
+.bonus{margin-top:12px;font-size:var(--fs-small);color:var(--r2);font-weight:700}
+.scores{margin-top:56px;font-size:var(--fs-small);color:var(--night-text);display:grid;grid-template-columns:auto auto;gap:3px 12px;justify-content:center;text-align:left}
+.scores .h{grid-column:1/-1;text-align:center;margin-bottom:2px}
+.scores b{color:#fff;font-variant-numeric:tabular-nums}
+
+/* ---------- card picking ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px}
+/* card picking: two-line bar and a white footer with an inset divider, per Figma */
+.pick .bar{height:auto;min-height:64px}
+.pick .foot{position:relative;background:#fff;padding:18px 24px 24px}
+.pick .foot::before{content:"";position:absolute;top:0;left:24px;right:24px;border-top:2px solid var(--secondary-edge)}
+.pick .toast{bottom:calc(var(--hb) + 112px)}
+.pick .menu{top:calc(var(--sb) + 64px)}
+.menu button[disabled]{opacity:.4;pointer-events:none}
+.mcard-wrap{position:relative;min-width:0;display:flex}
+.mcard{flex:1;-webkit-touch-callout:none;user-select:none;position:relative;overflow:hidden;min-width:0;height:250px;border:var(--border-width) solid var(--card-border);border-radius:var(--card-radius);background:var(--surface);color:var(--text-strong);box-shadow:var(--card-shadow);
+  padding:36px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;transition:border-color .12s}
+.mcard.is-sel{border-color:var(--card-selected)}
+.mc-body{flex:1;min-height:0;width:100%;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:12px}
+.mc-title{font-weight:var(--card-title-weight);font-size:var(--card-title-size);line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.mc-desc{font-weight:var(--card-desc-weight);font-size:var(--card-desc-size);line-height:22px;text-align:left;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.mc-foot{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mc-cat{padding:8px 10px 0;border-top:1px dashed #bdbdbd;font-family:var(--font-alt);font-weight:300;font-size:var(--fs-small);line-height:normal;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.mc-pts{width:40px;height:27px;border-radius:20px 20px 0 0;color:#fff;font-size:16px;font-weight:800;line-height:1;display:grid;place-items:start center;padding-top:5px}
+.mc-check{position:absolute;top:0;right:0;width:32px;height:32px;background:var(--card-selected);border-radius:0 0 0 20px}
+.mc-check svg{display:block;width:32px;height:32px}
+/* expand button: always visible on clipped cards, faint so it doesn't compete with the title */
+.mc-more{position:absolute;top:6px;left:6px;width:36px;height:36px;border:0;border-radius:50%;background:none;color:#b3adb5;display:none;place-items:center}
+.is-clipped .mc-more{display:grid}
+.mc-more svg{width:18px;height:18px}
+@media (hover:hover){.mc-more:hover{background:var(--wash);color:#49454f}}
+.scrim.peek-scrim{align-items:center;justify-content:center;padding:24px}
+.peek-dlg{width:100%;max-width:345px;background:var(--surface);border-radius:var(--dialog-radius);padding:36px 24px 24px;box-shadow:0 20px 50px rgba(0,0,0,.25);animation:grow .18s ease-out}
+.peek-dlg:focus{outline:none}
+.peek-dlg .row-btns{display:flex;gap:10px}
+@keyframes grow{from{transform:scale(.85);opacity:0}}
+.peek-card{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:24px}
+.peek-card h3{margin:0;font-size:28px;font-weight:700;text-align:center;overflow-wrap:anywhere}
+.peek-card p{margin:0;align-self:stretch;color:#000;font-size:18px;line-height:1.5}
+.peek-card .mc-foot{margin-top:8px}
+.toast{position:absolute;left:16px;right:16px;bottom:calc(var(--hb) + 84px);background:var(--ink);color:#fff;font-size:var(--fs-body);padding:11px 14px;border-radius:8px;text-align:center;
+  opacity:0;translate:0 8px;transition:opacity .2s, translate .2s;pointer-events:none}
+.toast.show{opacity:1;translate:0 0}
+
+/* ---------- turn ---------- */
+.progress{height:5px;background:var(--wash);flex:none}
+.progress i{display:block;height:100%;background:var(--timer);transition:background .3s}
+.timer{text-align:center;font-size:17px;font-variant-numeric:tabular-nums;margin:6px 0 0;font-weight:600}
+.is-low .progress i{background:var(--danger)}
+.is-low .timer{color:var(--danger)}
+.card-zone{position:relative;flex:1;min-height:0;padding:10px 18px 14px;display:flex}
+.pcard{position:relative;flex:1;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 4px 0 #e4e4e4;
+  padding:40px 22px 64px;display:flex;flex-direction:column;align-items:center;text-align:center;touch-action:none;user-select:none;cursor:grab}
+.pc-title{margin:0 0 20px;font-size:23px;line-height:1.2;font-weight:800;text-wrap:balance;overflow-wrap:anywhere}
+.pc-desc{margin:0;font-size:var(--fs-body);line-height:1.6;color:#333;max-width:30em}
+.pc-cat{margin-top:auto;width:100%;border-top:1px dotted #d3d3d3;padding-top:12px;font-size:13px;letter-spacing:.16em;font-weight:700}
+.pc-pts{position:absolute;bottom:0;left:50%;translate:-50% 0;width:74px;height:50px;border-radius:37px 37px 0 0;color:#fff;display:flex;flex-direction:column;align-items:center;padding-top:6px;line-height:1}
+.pc-pts b{font-size:20px;font-weight:900}
+.pc-pts span{font-size:11px;font-weight:700;margin-top:2px}
+.veil{position:absolute;inset:10px 18px 14px;border-radius:14px;background:rgba(255,255,255,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
+.veil h3{margin:0;font-size:22px;font-weight:900}
+.veil p{margin:0;color:var(--muted);font-size:var(--fs-body)}
+.veil .btn{flex:none;width:180px}
+.menu{position:absolute;top:calc(var(--sb) + 50px);right:10px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:6px;z-index:5;min-width:160px}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:10px 12px;border-radius:6px;font-weight:700;font-size:var(--fs-body);text-align:left}
+.menu button:hover{background:var(--wash)}
+.menu svg{width:16px;height:16px}
+
+/* ---------- time's up ---------- */
+.timesup{background:#4f4f4f;display:grid;place-items:center;border:0;width:100%;padding:0}
+.timesup h2{margin:0;color:var(--danger);font-size:clamp(40px,13vw,54px);font-weight:900;animation:slam .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes slam{from{transform:scale(1.8);opacity:0}}
+
+/* ---------- summary / round end / final ---------- */
+.big-score{text-align:center;margin:8px 0 2px;font-size:44px;font-weight:900;font-variant-numeric:tabular-nums}
+.big-score small{font-size:16px;font-weight:800;color:var(--muted);margin-left:4px}
+.list{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.row{display:flex;align-items:center;gap:12px;width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px 12px;text-align:left}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:var(--fs-body);font-weight:800;overflow-wrap:anywhere}
+.row .t span{font-size:10px;letter-spacing:.12em;font-weight:700}
+.row .pts{font-weight:800;font-size:var(--fs-small);font-variant-numeric:tabular-nums}
+.row .box{width:24px;height:24px;border-radius:6px;background:var(--ok);display:grid;place-items:center;color:#fff;flex:none}
+.row .box svg{width:14px;height:14px}
+.row.off{opacity:.5}
+.row.off .t b{text-decoration:line-through}
+.row.off .box{background:#fff;border:2px solid var(--line)}
+.row.off .box svg{display:none}
+.empty{margin-top:20px;text-align:center;color:var(--muted);font-size:var(--fs-body)}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.team-score{border:1px solid var(--line);border-radius:10px;padding:16px 10px;text-align:center;min-width:0}
+.team-score.lead{border:2px solid var(--brand)}
+.team-score small{display:block;font-size:var(--fs-small);font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-score b{font-size:36px;font-weight:900;font-variant-numeric:tabular-nums}
+.next-up{margin-top:22px;padding:14px;border-radius:10px;background:var(--wash);display:flex;align-items:center;gap:12px;font-size:var(--fs-body)}
+.next-up .pill{flex:none}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:var(--fs-body)}
+th,td{padding:10px 6px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;overflow-wrap:anywhere;vertical-align:bottom}
+tfoot td{font-weight:900;border-bottom:0;font-size:16px}
+.final{background:var(--cover);color:#fff}
+.final .faces{opacity:.95}
+.final h2{text-align:center;margin:14px 0 4px;font-size:30px;font-weight:900;text-wrap:balance;overflow-wrap:anywhere}
+.final .sub{color:#ffe1dc}
+.final .sheet{margin:22px 0 0;background:#fff;color:var(--ink);border-radius:12px;padding:6px 14px}
+.final .foot .btn-line{background:transparent;color:#fff;border-color:rgba(255,255,255,.6);box-shadow:none}
+
+/* ---------- confirm dialog ---------- */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:10}
+.sheet-dlg{width:100%;background:var(--surface);border-radius:var(--sheet-radius) var(--sheet-radius) 0 0;padding:22px 18px calc(20px + var(--hb))}
+.sheet-dlg h3{margin:0 0 6px;font-size:var(--type-heading-size);font-weight:900}
+.sheet-dlg p{margin:0 0 18px;color:#555;font-size:var(--fs-body);line-height:1.5}
+.sheet-dlg .row-btns{display:flex;gap:10px}
+
+@media (prefers-reduced-motion:reduce){
+  .blink,.timesup h2,.tile.pop,.peek-dlg{animation:none}
+  .toast{transition:none}
+}
+
+/* ---------- "Pick your cards" handoff ---------- */
+.handoff{background:var(--p3);color:#fff}
+.handoff .icon-btn{color:#fff}
+.handoff .icon-btn:hover{background:rgba(255,255,255,.12)}
+.handoff .bar .stack span{color:rgba(255,255,255,.7)}
+.handoff-mid{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 28px}
+.eyebrow{margin:0;font-size:var(--type-label-size);font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.fan{position:relative;width:100%;height:270px;margin:28px 0 30px;flex:none}
+.fan-card{position:absolute;left:50%;top:10px;width:168px;height:236px;pointer-events:none;
+  --r:calc((var(--k) - 1) * 11deg);--x:calc((var(--k) - 1) * 78px);--y:0px;
+  transform:translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(var(--r));
+  box-shadow:0 14px 30px rgba(30,10,40,.35);animation:fanIn .55s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--k) * 70ms)}
+.fan-card:nth-child(2){z-index:2;--y:0px}
+.fan-card:nth-child(1){--y:16px}
+.fan-card:nth-child(3){--y:16px}
+.fan-card .mc-desc{-webkit-line-clamp:3}
+@keyframes fanIn{from{transform:translateX(-50%) translateY(40px) rotate(0deg);opacity:0}}
+.handoff h2{margin:0;font-size:var(--type-display-size);line-height:var(--type-display-line);font-weight:var(--type-display-weight);text-wrap:balance;overflow-wrap:anywhere}
+.handoff .hl{color:var(--r2)}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 14px}
+.chips span{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:var(--fs-small);color:rgba(255,255,255,.9)}
+.chips b{color:#fff;font-weight:800}
+.handoff-sub{margin:0;max-width:30ch;font-size:var(--fs-body);line-height:1.5;color:rgba(255,255,255,.85)}
+.handoff .btn-white{color:var(--p3)}
+@media (prefers-reduced-motion:reduce){.fan-card{animation:none}}
+
+/* ---------- team icons + "Who goes first" ---------- */
+.avatar{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;flex:none;overflow:visible!important}
+.avatar svg{width:56%;height:auto;overflow:visible}
+.avatar.sm{width:var(--avatar-sm);height:var(--avatar-sm);margin:0 auto 8px}
+.tile-wrap{position:relative;display:flex;min-width:0}
+.tiles-hint{margin:18px 0 0;text-align:center;color:var(--text-subtle);font-size:var(--type-caption-size)}
+.btn-square svg{color:var(--primary)}
+.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0 18px}
+.avatar-opt{aspect-ratio:1;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px transparent;padding:0;display:grid;place-items:center}
+.avatar-opt svg{width:56%;height:auto;overflow:visible}
+.avatar-opt.is-on{box-shadow:0 0 0 3px var(--ink)}
+.swatches{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+.swatch{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--secondary-edge);padding:0}
+.swatch.is-on{box-shadow:0 0 0 3px var(--ink)}
+.tile-wrap{align-items:start}
+.tile-wrap .tile{flex:1;position:relative;overflow:hidden;padding:28px 16px 24px;gap:14px;justify-content:flex-start}
+.tile-wrap .tile.is-on{border-color:var(--card-selected)}
+.tile .avatar{width:84px;height:84px}
+.tile-name{font-size:var(--fs-header);font-weight:700;color:var(--text-strong)}
+/* players screen: team icon beside each name field */
+.team-field{align-items:stretch}
+.team-line{display:flex;align-items:center;gap:12px}
+.team-line input{flex:1;min-width:0}
+.av-btn{position:relative;flex:none;border:0;background:none;padding:0;border-radius:50%}
+.av-btn .avatar.md{width:58px;height:58px}
+.av-pencil{position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;border:2px solid var(--secondary-edge);background:#fff;color:#555;display:grid;place-items:center}
+.av-pencil svg{width:12px;height:12px}
+.av-btn:hover .av-pencil{color:var(--primary);border-color:var(--primary)}
+/* players screen v2: count on top, then two team cards that mirror the "Who goes first" tiles */
+.deck-line{margin:0;text-align:center;font-size:var(--type-caption-size);color:var(--text-subtle);font-variant-numeric:tabular-nums}
+.team-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.team-card{min-width:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 14px 16px;border:2px solid var(--secondary-edge);border-radius:12px;background:#fff;box-shadow:3px 3px 1px rgba(97,97,97,.1)}
+.team-tag{font-size:var(--type-label-size);font-weight:var(--type-label-weight);color:var(--text-label);letter-spacing:var(--type-label-tracking);text-transform:uppercase}
+.team-card .av-btn .avatar.md{width:var(--avatar-md);height:var(--avatar-md)}
+.team-card input{width:100%;min-width:0;border:0;border-bottom:2px solid var(--secondary-edge);border-radius:0;padding:6px 2px;background:transparent;font:inherit;font-weight:700;font-size:var(--fs-title);text-align:center;color:#000;text-overflow:ellipsis}
+.team-card input:focus{outline:none;border-bottom-color:var(--primary)}
+.team-card small{font-size:var(--type-caption-size);color:var(--text-subtle)}
+/* players screen v3: count on top, then the two teams face off */
+.vs-count{display:flex;flex-direction:column;align-items:center;gap:8px}
+.vs-count-row{display:flex;align-items:center;justify-content:center;gap:14px}
+.vs-count-row b{font-size:var(--fs-title);color:var(--text-strong)}
+.vs-rule{border:0;border-top:1px solid var(--secondary-edge);margin:0}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:8px}
+.vs-team{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.vs-team .av-btn .avatar.lg{width:var(--avatar-lg);height:var(--avatar-lg)}
+.vs-team .av-pencil{width:30px;height:30px}
+.vs-team input{width:100%;min-width:0;border:0;border-bottom:var(--border-width) dashed var(--border);border-radius:0;padding:6px 0;background:none;font:inherit;font-weight:800;font-size:var(--fs-header);text-align:center;color:var(--text-strong);text-overflow:ellipsis}
+.vs-team input:focus{outline:none;border-bottom:2px solid var(--primary)}
+.vs-team small{font-size:var(--type-caption-size);color:var(--text-subtle)}
+.vs-mid{margin-top:40px;font-size:var(--fs-body);font-weight:800;font-style:italic;color:#b9b3bb;letter-spacing:.04em}  /* kept quiet on purpose */
+/* dark and colored screens reuse the same header rule with light colors */
+.night,.handoff{--appbar-title-color:var(--text-on-color);--appbar-sub-color:rgba(255,255,255,.7);--appbar-icon-color:var(--text-on-color)}
+
+/* ---------- round intro (round color + scoreboard sheet) ---------- */
+.round-intro{background:var(--round-color);color:var(--ri-ink);padding-bottom:0;--appbar-icon-color:var(--ri-ink);--appbar-title-color:var(--ri-ink)}
+.round-intro .btn-red{--_bg:var(--ri-ink);--_edge:#000}
+.round-intro .foot{background:var(--surface);padding-bottom:calc(18px + var(--hb))}
+.ri-top{flex:none;display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px var(--gutter) 30px}
+.ri-label{font-size:var(--type-label-size);font-weight:800;letter-spacing:.24em;text-transform:uppercase;opacity:.75}
+.ri-dots{display:flex;gap:6px;margin-top:10px}
+.ri-dots i{width:22px;height:5px;border-radius:3px;background:rgba(20,32,46,.18)}
+.ri-dots i.on{background:var(--ri-ink)}
+.ri-top h2{margin:18px 0 6px;font-size:var(--type-display-size);line-height:var(--type-display-line);font-weight:var(--type-display-weight);text-wrap:balance}
+.ri-top p{margin:0;font-size:var(--type-body-size);opacity:.75}
+.ri-sheet{flex:1;min-height:0;overflow:auto;background:var(--surface);color:var(--text-strong);border-radius:var(--ri-sheet-radius) var(--ri-sheet-radius) 0 0;padding:28px var(--gutter) 0;display:flex;flex-direction:column;align-items:center}
+.ri-vs{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.ri-team{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 8px 14px;border-radius:16px;border:var(--border-width) solid transparent}
+.ri-team.is-up{border-color:var(--ri-ink)}
+.ri-team em{position:absolute;top:-11px;left:50%;translate:-50% 0;font-style:normal;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;background:var(--ri-ink);color:var(--text-on-color);padding:3px 9px;border-radius:var(--radius-pill);white-space:nowrap}
+.ri-team .avatar{width:68px;height:68px}
+.ri-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800;font-size:var(--fs-title)}
+.ri-pts{font-size:32px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.ri-pts small{font-size:var(--type-caption-size);color:var(--muted);margin-left:3px;font-weight:600}
+.ri-x{font-style:italic;font-weight:800;color:#b9b3bb}
+.ri-bonus{margin:16px 0 0;font-size:var(--type-caption-size);font-weight:600;text-align:center;color:var(--ri-ink);background:color-mix(in srgb, var(--round-color) 45%, #fff);padding:6px 12px;border-radius:var(--radius-pill)}
+.ri-deck{margin:0 0 8px;font-size:var(--type-caption-size);color:var(--text-subtle)}
+
+/* ---------- 3, 2, 1 countdown (round color, like the round intro) ---------- */
+.countdown{background:var(--round-color);color:var(--ri-ink);border:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;cursor:pointer}
+.cd-who{display:flex;align-items:center;gap:10px;font-size:var(--fs-title);font-weight:800}
+.cd-who .avatar.sm{margin:0;width:40px;height:40px}
+.cd-num{font-size:180px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;animation:cdPop .8s cubic-bezier(.2,1.4,.4,1) both}
+.cd-num.is-go{font-size:120px;color:var(--primary);animation-duration:.55s}
+.cd-hint{position:absolute;bottom:calc(var(--hb) + 28px);font-size:var(--type-caption-size);opacity:.55}
+@keyframes cdPop{0%{transform:scale(1.6);opacity:0}35%{transform:scale(1);opacity:1}85%{opacity:1}100%{transform:scale(.9);opacity:.2}}
+.cd-num.is-go{animation-name:cdGo}
+@keyframes cdGo{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.cd-num{animation:none}}
+
+/* ---------- big Correct / Pass stamp over the card area ---------- */
+.big-stamp{position:absolute;left:50%;top:42%;z-index:4;pointer-events:none;opacity:0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 26px 12px;border:6px solid currentColor;border-radius:16px;background:rgba(255,255,255,.92);
+  font-size:48px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;line-height:1;white-space:nowrap;translate:-50% -50%}
+.big-stamp small{font-size:var(--fs-title);letter-spacing:.04em;text-transform:none;font-weight:800}
+.big-stamp.yes{color:var(--ok);rotate:-10deg}
+.big-stamp.no{color:var(--pass);rotate:8deg}
+.big-stamp.show{animation:stampIn .65s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes stampIn{0%{transform:scale(2.2);opacity:0}22%{transform:scale(1);opacity:1}75%{transform:scale(1);opacity:1}100%{transform:scale(.96);opacity:0}}
+@media (prefers-reduced-motion:reduce){.big-stamp.show{animation:stampFade .65s both}@keyframes stampFade{0%,75%{opacity:1}100%{opacity:0}}}
+/* round intro sheet: a TV-style score strip, then the team that's playing now */
+.ri-strip{width:100%;display:flex;align-items:stretch;border-radius:var(--radius-lg);background:var(--surface-sunken);overflow:hidden}
+.ri-side{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:var(--type-caption-size);color:var(--text-label)}
+.ri-side.r{flex-direction:row-reverse}
+.ri-side .avatar{width:30px;height:30px}
+.ri-side span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ri-side b{margin-left:auto;font-size:var(--fs-header);font-weight:900;color:var(--text-strong);font-variant-numeric:tabular-nums}
+.ri-side.r b{margin-left:0;margin-right:auto}
+.ri-strip i{width:1px;margin:8px 0;background:var(--line)}
+.ri-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px 0}
+.ri-hero .avatar{width:110px;height:110px}
+.ri-now{margin-top:6px;font-size:var(--type-label-size);font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.ri-hero h3{margin:0;font-size:32px;font-weight:900;line-height:1.1;overflow-wrap:anywhere}
+.ri-hero p{margin:0;color:var(--muted);font-size:var(--type-body-size)}
+.ri-bonus{margin:0 0 12px!important}
+
+/* ---------- round complete: white columns rise out of the finished round's color ---------- */
+.round-end{background:var(--surface);padding-bottom:0}
+.round-end .btn-red{--_bg:var(--ri-ink);--_edge:#000}
+.round-end .foot{padding-bottom:calc(18px + var(--hb))}
+.re-band{flex:none;background:var(--round-color);color:var(--ri-ink);margin-top:calc(-1 * var(--sb));padding:calc(var(--sb) + 36px) var(--gutter) 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.re-label{font-size:var(--type-label-size);font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+.re-band h2{margin:10px 0 4px;font-size:var(--type-display-size);line-height:var(--type-display-line);font-weight:var(--type-display-weight);overflow-wrap:anywhere}
+.re-band p{margin:0;font-size:var(--type-caption-size);opacity:.75}
+.re-cols{margin-top:22px;display:flex;justify-content:center;align-items:flex-end;gap:36px}
+.re-col{width:96px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.re-col .avatar{width:64px;height:64px;box-shadow:0 0 0 4px rgba(255,255,255,.7)}
+.re-col b{font-size:24px;font-weight:900;font-variant-numeric:tabular-nums}
+.re-bar{display:block;width:100%;background:var(--surface);border-radius:14px 14px 0 0;animation:reGrow .7s cubic-bezier(.2,.9,.3,1) both}
+@keyframes reGrow{from{height:0!important;transform:scaleY(0);transform-origin:bottom}}
+.re-sheet{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:14px var(--gutter) 0}
+.re-names{display:flex;justify-content:center;gap:22px;text-align:center}
+.re-names div{width:110px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.re-names b{font-size:var(--fs-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.re-names small{font-size:var(--type-caption-size);color:var(--text-subtle);white-space:nowrap}
+.re-next{margin-top:auto;margin-bottom:6px;width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-lg);border:1px dashed var(--border);text-align:left}
+.re-dot{width:14px;height:14px;border-radius:50%;background:var(--next-color);flex:none}
+.re-next small{display:block;font-size:12px;letter-spacing:.14em;font-weight:800;text-transform:uppercase;color:var(--muted)}
+.re-next b{font-size:var(--fs-body)}
+@media (prefers-reduced-motion:reduce){.re-bar{animation:none}}
+
+/* card picking: info + menu on the right, title kept centered */
+.bar-actions{display:flex;flex:none}
+.pick .bar .stack{padding-left:var(--appbar-hit)}
+.help-list{margin:14px 0 22px;padding:0;list-style:none;counter-reset:h;display:flex;flex-direction:column;gap:14px}
+.help-list li{counter-increment:h;display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:var(--type-body-size);line-height:1.45;color:#555}
+.help-list li::before{content:counter(h);width:26px;height:26px;border-radius:50%;background:var(--surface-sunken);color:var(--text-strong);font-weight:800;font-size:var(--fs-small);display:grid;place-items:center}
+.help-list b{color:var(--text-strong)}
+.help-list svg{width:16px;height:16px;vertical-align:-3px;color:var(--muted)}
+
+/* ---------- round intro help sheet ---------- */
+.sheet-dlg .help-ex-title{margin:0 0 8px;font-weight:800;color:var(--text-strong);font-size:var(--type-body-size)}
+.help-ex{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px 10px;margin-bottom:20px;font-size:var(--type-caption-size);color:#555}
+.help-ex .pill{font-size:10px;padding:3px 8px}
+.help-sheet .row-btns:has([data-a=practice]){flex-direction:column-reverse}
+.help-sheet .row-btns .btn{flex:none;width:100%}
+
+/* ---------- practice turn ---------- */
+.practice-tag{align-self:center;margin:-4px 0 6px;padding:4px 12px;border-radius:var(--radius-pill);background:var(--ri-ink);color:var(--text-on-color);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.coach-tips{position:absolute;inset:0;z-index:5;pointer-events:none}
+.coach{position:absolute;background:var(--ri-ink);color:var(--text-on-color);font-size:13px;line-height:1.35;padding:10px 12px;border-radius:var(--radius-lg);max-width:170px;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:coachIn .3s ease-out both}
+.coach b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--r2);margin-bottom:2px}
+.coach::after{content:"";position:absolute;width:12px;height:12px;background:var(--ri-ink);rotate:45deg}
+.c-top{left:50%;translate:-50% 0;top:46%;max-width:240px;text-align:center}
+.c-top::after{left:50%;margin-left:-6px;top:-6px}
+.c-left{left:18px;bottom:6px}.c-left::after{left:36px;bottom:-6px}
+.c-right{right:18px;bottom:6px;animation-delay:.1s}.c-right::after{right:36px;bottom:-6px}
+@keyframes coachIn{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.coach{animation:none}}
+
+/* ---------- How to play: one focused section per round, each with a practice turn ---------- */
+.round-card{border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)}
+.rc-head{background:var(--round-color);color:var(--ri-ink);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.rc-num{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.rc-head b{font-size:var(--fs-title);font-weight:800}
+.rc-head span:last-child{font-size:var(--type-caption-size);opacity:.75}
+.rc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.rc-btn{flex:none;height:46px;font-size:var(--fs-body)}
+.rc-btn svg{width:18px;height:18px;color:var(--primary)}
+/* example: the card on the left, what the clue-giver says or does on the right */
+.rc-ex{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:10px}
+.rc-ex small{display:block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.rc-card{padding:10px 12px 12px;border:var(--border-width) solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--card-shadow);text-align:center;rotate:-3deg}
+.rc-card b{font-size:var(--fs-title);font-weight:800;color:var(--text-strong)}
+.rc-arrow{display:grid;place-items:center;color:var(--muted)}
+.rc-arrow svg{width:18px;height:18px}
+.rc-say{min-width:0;padding:10px 12px;border-radius:12px 12px 12px 2px;background:color-mix(in srgb, var(--round-color) 40%, #fff);font-size:var(--type-caption-size);line-height:1.4;color:var(--text-strong)}
+.help-ex-wrap{margin-bottom:20px}
